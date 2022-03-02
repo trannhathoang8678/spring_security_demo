@@ -1,7 +1,9 @@
 package security.demo.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,27 +17,24 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
     private int id;
     private String username;
     @JsonIgnore
     private String password;
+    private String email;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Integer id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.authorities = authorities;
-    }
-
     public static UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities = user.getRoleList().stream()
+        List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
         return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
                 user.getEncryptedPassword(),
+                user.getEmail(),
                 authorities);
     }
 

@@ -3,9 +3,11 @@ package security.demo.repository.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "`USER`")
@@ -24,13 +26,21 @@ public class User {
     private String encryptedPassword;
     @Column
     private String role;
-
+    @Column
+    private String email;
+    @Column(name = "is_disable", insertable = false)
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    private Boolean enable;
     @ManyToMany
     @JoinTable(
             name = "USER_ROLE",
             joinColumns = @JoinColumn(name = "USER_id"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_id"))
-    List<Role> roleList;
+    Set<Role> roles;
 
-
+    public User(String username, String email, String encryptedPassword) {
+        this.username = username;
+        this.encryptedPassword = encryptedPassword;
+        this.email = email;
+    }
 }
